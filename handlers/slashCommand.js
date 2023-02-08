@@ -8,7 +8,7 @@ const { REST } = require('@discordjs/rest');
 const AsciiTable = require('ascii-table');
 const table = new AsciiTable().setHeading('Slash Commands', 'Stats').setBorder('|', '=', '0', '0');
 
-const { TOKEN, CLIENT_ID } = require('../config.json');
+const { TOKEN, CLIENT_ID, GUILD_ID } = require('../config.json');
 
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 
@@ -44,9 +44,7 @@ module.exports = (client) => {
 	(async () => {
 		try {
 			await rest.put(
-				process.env.GUILD_ID ?
-				Routes.applicationGuildCommands(CLIENT_ID, process.env.GUILD_ID) :
-				Routes.applicationCommands(CLIENT_ID),
+				Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
 				{ body: slashCommands },
 			);
 			console.log(chalk.yellow('Slash Commands • Registered'));
