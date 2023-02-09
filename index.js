@@ -22,6 +22,7 @@ client.buttons = new Collection();
 client.prefix = config.prefix;
 
 module.exports = client;
+require('./database.js');
 
 fs.readdirSync('./handlers').forEach((handler) => {
   require(`./handlers/${handler}`)(client);
