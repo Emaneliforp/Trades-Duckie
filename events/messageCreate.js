@@ -6,10 +6,18 @@ const { messages } = require('../config.json');
 const prefix = client.prefix;
 const cooldown = new Collection();
 
+const fishKeys = client.commands.get('fish').keys;
+
 client.on('messageCreate', async message => {
 	if (message.author.bot) return;
 	if (message.channel.type !== 0) return;
+
+	if (fishKeys.includes(message.content.toLowerCase())) {
+		client.commands.get('fish').boss(message);
+	}
+
 	if (!message.content.startsWith(prefix)) return;
+
 	const args = message.content.slice(prefix.length).trim().split(/ +/g);
 	const cmd = args.shift().toLowerCase();
 	if (cmd.length == 0) return;
