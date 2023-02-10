@@ -3,7 +3,10 @@ const { Schema, model } = require('mongoose');
 const inventory = new Schema({
     userId : String,
     name: String,
-    quantity: Number,
+    quantity: {
+        type: Number,
+        default: 0,
+    },
 });
 
 module.exports = model('inventory', inventory);

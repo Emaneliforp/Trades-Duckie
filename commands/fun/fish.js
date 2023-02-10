@@ -1,3 +1,5 @@
+const invSchema = require('../../schemas/inventorySchema');
+
 const events = new Map;
 
 const chances = [10, 10, 6, 2, 3];
@@ -56,6 +58,17 @@ module.exports = {
     boss: async (msg) => {
         if (events.get(msg.author.id) != msg.content) return;
         events.delete(msg.author.id);
+
+        let inv = await invSchema.findOne({ userId: msg.author.id, name: 'legendary' });
+        if (!inv) {
+            inv = new invSchema({ userId: msg.author.id, name: 'legendary' });
+            await inv.save();
+        }
+
+        inv.quantity += 1;
+
+        await inv.save();
+
         const embed = { description: `You caught a **${fishes['legendary'].emoji + ' ' + fishes['legendary'].name}**!` };
         await msg.reply({ embeds: [embed] });
     },
@@ -87,10 +100,21 @@ module.exports = {
             }, 10000);
         }
         else {
-            res = fishes[res];
-            let amount = Math.floor(Math.random() * res.size) + 1;
+            const fish = fishes[res];
+            let amount = Math.floor(Math.random() * fish.size) + 1;
+
+            let inv = await invSchema.findOne({ userId: msg.author.id, name: res });
+            if (!inv) {
+                inv = new invSchema({ userId: msg.author.id, name: res });
+                await inv.save();
+            }
+
+            inv.quantity += amount;
+
+            await inv.save();
+
             if (amount == 1) amount = '';
-            const embed = { description: `You cast out your line and brought back **${amount + ' ' + res.emoji + ' ' + res.name}**!` };
+            const embed = { description: `You cast out your line and brought back **${amount + ' ' + fish.emoji + ' ' + fish.name}**!` };
             await msg.reply({ embeds: [embed] });
         }
 	},
