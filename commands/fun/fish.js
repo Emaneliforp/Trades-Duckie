@@ -13,14 +13,39 @@ const nones = [
     'Awh man, no fish wanted your rod today.',
 ];
 
+const eventMsg = 'ahhhhh the fish is too strong and your line is at risk to break! quick, type the phrase below in the next 10 seconds\n';
 const legendary = {
     'fish': {
-        msg: 'Type `f\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
+        msg: 'Type f\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF',
         key: 'fish fish fish fishy',
     },
     'camera': {
         msg: 'Type `g\uFEFFe\uFEFFt\uFEFF \uFEFFt\uFEFFh\uFEFFe\uFEFF \uFEFFc\uFEFFa\uFEFFm\uFEFFe\uFEFFr\uFEFFa\uFEFF \uFEFFr\uFEFFe\uFEFFa\uFEFFd\uFEFFy\uFEFF`',
         key: 'get the camera ready',
+    },
+    'hook': {
+        msg: 'Type h\uFEFFo\uFEFFo\uFEFFk\uFEFF \uFEFFl\uFEFFi\uFEFFn\uFEFFe\uFEFF \uFEFFs\uFEFFi\uFEFFn\uFEFFk\uFEFFe\uFEFFr\uFEFF',
+        key: 'hook line stinker',
+    },
+    'glub': {
+        msg: 'Type g\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF',
+        key: 'glub glub glub',
+    },
+    'big': {
+        msg: 'Type w\uFEFFo\uFEFFa\uFEFFh\uFEFF \uFEFFa\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFo\uFEFFn\uFEFF\uFEFFe',
+        key: 'woah a big one',
+    },
+    'fishy': {
+        msg: 'Type t\uFEFFh\uFEFFi\uFEFFs\uFEFF \uFEFFi\uFEFFs\uFEFF \uFEFFv\uFEFFe\uFEFFr\uFEFFy\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF',
+        key: 'this is very fishy',
+    },
+    'bait': {
+        msg: 'Type B\uFEFFi\uFEFFg\uFEFF \uFEFFb\uFEFFa\uFEFFi\uFEFFt\uFEFF \uFEFFc\uFEFFa\uFEFFt\uFEFFc\uFEFFh\uFEFFe\uFEFFs\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF',
+        key: 'big bait catches big fish',
+    },
+    'big_fishy': {
+        msg: 'Type b\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF',
+        key: 'big fishy',
     },
 };
 
@@ -69,7 +94,7 @@ module.exports = {
 
         await inv.save();
 
-        const embed = { description: `You caught a **${fishes['legendary'].emoji + ' ' + fishes['legendary'].name}**!` };
+        const embed = { description: `You cast out your line and brought back a **${fishes['legendary'].emoji + ' ' + fishes['legendary'].name}**, nice catch!` };
         await msg.reply({ embeds: [embed] });
     },
 	run: async (client, msg) => {
@@ -91,11 +116,11 @@ module.exports = {
             let event = Object.keys(legendary)[Math.floor(Math.random() * Object.keys(legendary).length)];
             event = legendary[event];
             events.set(msg.author.id, event.key);
-            await msg.reply(event.msg);
+            await msg.reply(eventMsg + event.msg);
             setTimeout(() => {
                 if (events.get(msg.author.id)) {
                     events.delete(msg.author.id);
-                    msg.reply('GG');
+                    msg.reply('The fish on hook is too strong, your fishing rod broke!');
                 }
             }, 10000);
         }
