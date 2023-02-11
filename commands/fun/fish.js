@@ -2,9 +2,9 @@ const invSchema = require('../../schemas/inventorySchema');
 
 const events = new Map;
 
-const chances = [10, 10, 6, 2, 3];
+const chances = [8, 10, 6, 1, 2];
 const outcomes = ['none', 'fish', 'rare', 'exotic', 'legendary'];
-const size = 31;
+const size = 29;
 
 const nones = [
     'LMAO you found nothing. NICE!',
@@ -16,7 +16,7 @@ const nones = [
 const eventMsg = 'ahhhhh the fish is too strong and your line is at risk to break! quick, type the phrase below in the next 10 seconds\n';
 const legendary = {
     'fish': {
-        msg: 'Type f\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF',
+        msg: 'Type `f\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
         key: 'fish fish fish fishy',
     },
     'camera': {
@@ -24,27 +24,27 @@ const legendary = {
         key: 'get the camera ready',
     },
     'hook': {
-        msg: 'Type h\uFEFFo\uFEFFo\uFEFFk\uFEFF \uFEFFl\uFEFFi\uFEFFn\uFEFFe\uFEFF \uFEFFs\uFEFFi\uFEFFn\uFEFFk\uFEFFe\uFEFFr\uFEFF',
+        msg: 'Type `h\uFEFFo\uFEFFo\uFEFFk\uFEFF \uFEFFl\uFEFFi\uFEFFn\uFEFFe\uFEFF \uFEFFs\uFEFFi\uFEFFn\uFEFFk\uFEFFe\uFEFFr\uFEFF`',
         key: 'hook line stinker',
     },
     'glub': {
-        msg: 'Type g\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF',
+        msg: 'Type `g\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF`',
         key: 'glub glub glub',
     },
     'big': {
-        msg: 'Type w\uFEFFo\uFEFFa\uFEFFh\uFEFF \uFEFFa\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFo\uFEFFn\uFEFF\uFEFFe',
+        msg: 'Type `w\uFEFFo\uFEFFa\uFEFFh\uFEFF \uFEFFa\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFo\uFEFFn\uFEFF\uFEFFe`',
         key: 'woah a big one',
     },
     'fishy': {
-        msg: 'Type t\uFEFFh\uFEFFi\uFEFFs\uFEFF \uFEFFi\uFEFFs\uFEFF \uFEFFv\uFEFFe\uFEFFr\uFEFFy\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF',
+        msg: 'Type `t\uFEFFh\uFEFFi\uFEFFs\uFEFF \uFEFFi\uFEFFs\uFEFF \uFEFFv\uFEFFe\uFEFFr\uFEFFy\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
         key: 'this is very fishy',
     },
     'bait': {
-        msg: 'Type B\uFEFFi\uFEFFg\uFEFF \uFEFFb\uFEFFa\uFEFFi\uFEFFt\uFEFF \uFEFFc\uFEFFa\uFEFFt\uFEFFc\uFEFFh\uFEFFe\uFEFFs\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF',
+        msg: 'Type `B\uFEFFi\uFEFFg\uFEFF \uFEFFb\uFEFFa\uFEFFi\uFEFFt\uFEFF \uFEFFc\uFEFFa\uFEFFt\uFEFFc\uFEFFh\uFEFFe\uFEFFs\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF`',
         key: 'big bait catches big fish',
     },
     'big_fishy': {
-        msg: 'Type b\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF',
+        msg: 'Type `b\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
         key: 'big fishy',
     },
 };
@@ -79,7 +79,8 @@ module.exports = {
 	cooldown: 1000, // change to 15s
 	userPerms: [],
 	botPerms: [],
-    keys: ['fish fish fish fishy', 'get the camera ready'],
+    keys: ['fish fish fish fishy', 'get the camera ready', 'hook line stinker', 'glub glub glub',
+        'woah a big one', 'this is very fishy', 'big bait catches big fish', 'big fishy'],
     boss: async (msg) => {
         if (events.get(msg.author.id) != msg.content) return;
         events.delete(msg.author.id);
