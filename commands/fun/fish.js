@@ -82,9 +82,7 @@ module.exports = {
     boss: async (client, msg) => {
         if (events.get(msg.author.id) != msg.content) return;
         events.delete(msg.author.id);
-
-        const inv = await client.db.findOrCreateInv(msg.author.id, 'legendary');
-        await inv.save();
+        await client.db.findOrCreateInv(msg.author.id, 'legendary');
 
         const embed = { description: `You cast out your line and brought back a **${fishes['legendary'].emoji + ' ' + fishes['legendary'].name}**, nice catch!` };
         await msg.reply({ embeds: [embed] });
@@ -119,9 +117,7 @@ module.exports = {
         else {
             const fish = fishes[res];
             let amount = Math.floor(Math.random() * fish.size) + 1;
-
-            const inv = await client.db.findOrCreateInv(msg.author.id, res, amount);
-            await inv.save();
+            await client.db.findOrCreateInv(msg.author.id, res, amount);
 
             if (amount == 1) amount = '';
             const embed = { description: `You cast out your line and brought back **${amount + ' ' + fish.emoji + ' ' + fish.name}**!` };
