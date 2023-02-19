@@ -1,5 +1,4 @@
 const { EmbedBuilder, ApplicationCommandType } = require('discord.js');
-const pointSchema = require('../../schemas/pointSchema');
 module.exports = {
 	name: 'staff',
 	description: 'Staff commands.',
@@ -80,11 +79,7 @@ module.exports = {
         const amount = options.getInteger('amount');
         const user = options.getUser('user');
 
-        let userData = await pointSchema.findOne({ userId: user.id });
-        if (!userData) {
-            userData = new pointSchema({ userId: user.id });
-            await userData.save();
-        }
+        const userData = await client.db.findOrCreatePoint(user.id);
 
         userData.points += amount;
 
@@ -104,11 +99,7 @@ module.exports = {
         const user = options.getUser('user');
         const amount = options.getInteger('amount');
 
-        let userData = await pointSchema.findOne({ userId: user.id });
-        if (!userData) {
-            userData = new pointSchema({ userId: user.id });
-            await userData.save();
-        }
+        const userData = await client.db.findOrCreatePoint(user.id);
 
         userData.points -= amount;
 
@@ -127,7 +118,8 @@ module.exports = {
     reset: async (client, interaction, options) => {
         const user = options.getUser('user');
 
-        const userData = await pointSchema.findOne({ userId: user.id });
+        const userData = await client.db.findOrCreatePoint(user.id);
+
         if (!userData) {
             return interaction.editReply({ embeds: [
                 new EmbedBuilder().setTitle('Error').setDescription('User does not exist in the database').setColor('Red'),
@@ -135,6 +127,7 @@ module.exports = {
         }
 
         await userData.delete();
+        await client.db.deletePoint(user.id);
 
         const embed = new EmbedBuilder()
             .setTitle('Points Reset')

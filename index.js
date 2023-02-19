@@ -14,11 +14,13 @@ const client = new Client({
 
 const fs = require('fs');
 const config = require('./config.json');
+const Db = require('./utils/database');
 
 client.commands = new Collection();
 client.aliases = new Collection();
 client.slashCommands = new Collection();
 client.buttons = new Collection();
+client.db = new Db();
 client.prefix = config.prefix;
 
 module.exports = client;
