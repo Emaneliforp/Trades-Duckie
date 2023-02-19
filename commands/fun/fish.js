@@ -1,10 +1,8 @@
-const invSchema = require('../../schemas/inventorySchema');
-
 const events = new Map;
 
 const chances = [8, 10, 6, 1, 2];
 const outcomes = ['none', 'fish', 'rare', 'exotic', 'legendary'];
-const size = 29;
+const size = 26;
 
 const nones = [
     'LMAO you found nothing. NICE!',
@@ -81,18 +79,11 @@ module.exports = {
 	botPerms: [],
     keys: ['fish fish fish fishy', 'get the camera ready', 'hook line stinker', 'glub glub glub',
         'woah a big one', 'this is very fishy', 'big bait catches big fish', 'big fishy'],
-    boss: async (msg) => {
+    boss: async (client, msg) => {
         if (events.get(msg.author.id) != msg.content) return;
         events.delete(msg.author.id);
 
-        let inv = await invSchema.findOne({ userId: msg.author.id, name: 'legendary' });
-        if (!inv) {
-            inv = new invSchema({ userId: msg.author.id, name: 'legendary' });
-            await inv.save();
-        }
-
-        inv.quantity += 1;
-
+        const inv = await client.db.findOrCreateInv(msg.author.id, 'legendary');
         await inv.save();
 
         const embed = { description: `You cast out your line and brought back a **${fishes['legendary'].emoji + ' ' + fishes['legendary'].name}**, nice catch!` };
@@ -129,14 +120,7 @@ module.exports = {
             const fish = fishes[res];
             let amount = Math.floor(Math.random() * fish.size) + 1;
 
-            let inv = await invSchema.findOne({ userId: msg.author.id, name: res });
-            if (!inv) {
-                inv = new invSchema({ userId: msg.author.id, name: res });
-                await inv.save();
-            }
-
-            inv.quantity += amount;
-
+            const inv = await client.db.findOrCreateInv(msg.author.id, res, amount);
             await inv.save();
 
             if (amount == 1) amount = '';
