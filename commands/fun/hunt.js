@@ -1,101 +1,94 @@
-const invSchema = require('../../schemas/inventorySchema');
-
 const events = new Map;
 
-const chances = [8, 10, 6, 1, 2];
-const outcomes = ['none', 'fish', 'rare', 'exotic', 'legendary'];
-const size = 29;
+const chances = [8, 8, 8, 6, 6, 3, 2];
+const outcomes = ['none', 'duck', 'skunk', 'rabbit', 'boar', 'deer', 'dragon'];
+const size = 41;
 
 const nones = [
-    'LMAO you found nothing. NICE!',
-    'lol you suck, you found nothing',
-    'You cast out your line and sadly didn\'t get a bite.',
-    'Awh man, no fish wanted your rod today.',
+    'You went hunting in the woods and brought back NOTHING! 😆',
+    'LMAO you are terrible, you found nothing to hunt',
 ];
 
-const eventMsg = 'ahhhhh the fish is too strong and your line is at risk to break! quick, type the phrase below in the next 10 seconds\n';
+const eventMsg = 'Holy fucking shit god forbid you find something innocent like a duck, ITS A DRAGON! Type the phrase below in the next 10 seconds or you\'re toast!\n';
 const legendary = {
+    'eating': {
+        msg: 'Type `p﻿l﻿s﻿ ﻿n﻿o﻿ ﻿e﻿a﻿t﻿i﻿n﻿g﻿ ﻿m﻿e﻿`',
+        key: 'pls no eating me',
+    },
+    'holy': {
+        msg: 'Type `h﻿o﻿l﻿y﻿ ﻿s﻿h﻿i﻿t﻿ ﻿a﻿ ﻿d﻿r﻿a﻿g﻿o﻿n﻿`',
+        key: 'holy shit a dragon',
+    },
+    'toothers': {
+        msg: 'Type `w﻿o﻿a﻿h﻿ ﻿t﻿h﻿o﻿s﻿e﻿ ﻿a﻿r﻿e﻿ ﻿s﻿o﻿m﻿e﻿ ﻿t﻿o﻿o﻿t﻿h﻿e﻿r﻿s`',
+        key: 'woah those are some toothers',
+    },
+    'frick': {
+        msg: 'Type `o﻿h﻿ ﻿f﻿r﻿i﻿c﻿k﻿ ﻿a﻿ ﻿d﻿r﻿a﻿g﻿o﻿n﻿`',
+        key: 'oh frick a dragon',
+    },
+    'momma': {
+        msg: 'Type `d﻿r﻿a﻿g﻿o﻿n﻿ ﻿t﻿h﻿e﻿s﻿e﻿ ﻿n﻿u﻿t﻿s﻿ ﻿o﻿n﻿ ﻿y﻿o﻿u﻿r﻿ ﻿m﻿o﻿m﻿m﻿a﻿`',
+        key: 'dragon these nuts on your momma',
+    },
+    'rawr': {
+        msg: 'Type `d﻿r﻿a﻿g﻿o﻿n﻿ ﻿s﻿a﻿y﻿s﻿ ﻿r﻿a﻿w﻿r`',
+        key: 'dragon say rawr',
+    },
     'fish': {
-        msg: 'Type `f\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
-        key: 'fish fish fish fishy',
-    },
-    'camera': {
-        msg: 'Type `g\uFEFFe\uFEFFt\uFEFF \uFEFFt\uFEFFh\uFEFFe\uFEFF \uFEFFc\uFEFFa\uFEFFm\uFEFFe\uFEFFr\uFEFFa\uFEFF \uFEFFr\uFEFFe\uFEFFa\uFEFFd\uFEFFy\uFEFF`',
-        key: 'get the camera ready',
-    },
-    'hook': {
-        msg: 'Type `h\uFEFFo\uFEFFo\uFEFFk\uFEFF \uFEFFl\uFEFFi\uFEFFn\uFEFFe\uFEFF \uFEFFs\uFEFFi\uFEFFn\uFEFFk\uFEFFe\uFEFFr\uFEFF`',
-        key: 'hook line stinker',
-    },
-    'glub': {
-        msg: 'Type `g\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF \uFEFFg\uFEFFl\uFEFFu\uFEFFb\uFEFF`',
-        key: 'glub glub glub',
-    },
-    'big': {
-        msg: 'Type `w\uFEFFo\uFEFFa\uFEFFh\uFEFF \uFEFFa\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFo\uFEFFn\uFEFF\uFEFFe`',
-        key: 'woah a big one',
-    },
-    'fishy': {
-        msg: 'Type `t\uFEFFh\uFEFFi\uFEFFs\uFEFF \uFEFFi\uFEFFs\uFEFF \uFEFFv\uFEFFe\uFEFFr\uFEFFy\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
-        key: 'this is very fishy',
-    },
-    'bait': {
-        msg: 'Type `B\uFEFFi\uFEFFg\uFEFF \uFEFFb\uFEFFa\uFEFFi\uFEFFt\uFEFF \uFEFFc\uFEFFa\uFEFFt\uFEFFc\uFEFFh\uFEFFe\uFEFFs\uFEFF \uFEFFb\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFF`',
-        key: 'big bait catches big fish',
-    },
-    'big_fishy': {
-        msg: 'Type `b\uFEFFi\uFEFFg\uFEFF \uFEFFf\uFEFFi\uFEFFs\uFEFFh\uFEFFy\uFEFF`',
-        key: 'big fishy',
+        msg: 'Type `w﻿h﻿y﻿ ﻿d﻿i﻿d﻿n﻿\'﻿t﻿ ﻿I﻿ ﻿j﻿u﻿s﻿t﻿ ﻿g﻿o﻿ ﻿f﻿i﻿s﻿h﻿i﻿n﻿g`',
+        key: 'why didn\'t i just go fishing',
     },
 };
 
-const fishes = {
-    'fish': {
-        name: 'Common Fish',
-        emoji: '<:common_fish:1073344957898834042>',
-        size: 4,
-    },
-    'rare': {
-        name: 'Rare Fish',
-        emoji: '<:rare_fish:1073340855307489441>',
+const animals = {
+    'duck': {
+        name: 'Duck',
+        emoji: '<:duckie:1078745078144696391>',
         size: 2,
     },
-    'exotic': {
-        name: 'Exotic Fish',
-        emoji: '<:exotic:1073340852195315775>',
+    'skunk': {
+        name: 'Skunk',
+        emoji: '🦨',
+        size: 4,
+    },
+    'rabbit': {
+        name: 'Rabbit',
+        emoji: '🐇',
+        size: 2,
+    },
+    'boar': {
+        name: 'Boar',
+        emoji: '🐗',
+        size: 2,
+    },
+    'deer': {
+        name: 'Deer',
+        emoji: '🦌',
         size: 0,
     },
-    'legendary': {
-        name: 'Legendary Fish',
-        emoji: '<:legendary:1073340850693738506>',
+    'dragon': {
+        name: 'Dragon',
+        emoji: '🐲',
         size: 0,
     },
 };
 
 
 module.exports = {
-	name: 'fish',
-	description: 'fish fish fish',
+	name: 'hunt',
+	description: 'hunt hunt hunt',
 	cooldown: 1000, // change to 15s
 	userPerms: [],
 	botPerms: [],
-    keys: ['fish fish fish fishy', 'get the camera ready', 'hook line stinker', 'glub glub glub',
-        'woah a big one', 'this is very fishy', 'big bait catches big fish', 'big fishy'],
-    boss: async (msg) => {
+    keys: ['pls no eating me', 'holy shit a dragon', 'woah those are some toothers', 'oh frick a dragon',
+        'dragon these nuts on your momma', 'dragon say rawr', 'why didn\'t i just go fishing'],
+    boss: async (client, msg) => {
         if (events.get(msg.author.id) != msg.content) return;
         events.delete(msg.author.id);
+        await client.db.findOrCreateInv(msg.author.id, 'dragon');
 
-        let inv = await invSchema.findOne({ userId: msg.author.id, name: 'legendary' });
-        if (!inv) {
-            inv = new invSchema({ userId: msg.author.id, name: 'legendary' });
-            await inv.save();
-        }
-
-        inv.quantity += 1;
-
-        await inv.save();
-
-        const embed = { description: `You cast out your line and brought back a **${fishes['legendary'].emoji + ' ' + fishes['legendary'].name}**, nice catch!` };
+        const embed = { description: 'You went hunting, and came back with a fucking Dragon 🐲, what the hell?' };
         await msg.reply({ embeds: [embed] });
     },
 	run: async (client, msg) => {
@@ -113,7 +106,7 @@ module.exports = {
             const embed = { description: nones[Math.floor(Math.random() * nones.length)] };
             await msg.reply({ embeds: [embed] });
         }
-        else if (res == 'legendary') {
+        else if (res == 'dragon') {
             let event = Object.keys(legendary)[Math.floor(Math.random() * Object.keys(legendary).length)];
             event = legendary[event];
             events.set(msg.author.id, event.key);
@@ -121,26 +114,17 @@ module.exports = {
             setTimeout(() => {
                 if (events.get(msg.author.id)) {
                     events.delete(msg.author.id);
-                    msg.reply('The fish on hook is too strong, your fishing rod broke!');
+                    msg.reply('You went to shoot the dragon, and your weak little macaroni legs gave out and you fell. Missing the shot, the dragon ate you. LOL');
                 }
             }, 10000);
         }
         else {
-            const fish = fishes[res];
-            let amount = Math.floor(Math.random() * fish.size) + 1;
-
-            let inv = await invSchema.findOne({ userId: msg.author.id, name: res });
-            if (!inv) {
-                inv = new invSchema({ userId: msg.author.id, name: res });
-                await inv.save();
-            }
-
-            inv.quantity += amount;
-
-            await inv.save();
+            const animal = animals[res];
+            let amount = Math.floor(Math.random() * animal.size) + 1;
+            await client.db.findOrCreateInv(msg.author.id, res, amount);
 
             if (amount == 1) amount = '';
-            const embed = { description: `You cast out your line and brought back **${amount + ' ' + fish.emoji + ' ' + fish.name}**!` };
+            const embed = { description: `You cast out your line and brought back **${amount + ' ' + animal.emoji + ' ' + animal.name}**!` };
             await msg.reply({ embeds: [embed] });
         }
 	},
