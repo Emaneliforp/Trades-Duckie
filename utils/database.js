@@ -102,18 +102,23 @@ class Database {
             const foundItem = inventory.find(a => a.name == name);
             if (foundItem) {
                 foundItem.quantity += amount;
-
-                await foundItem.save();
-
-                return foundItem;
+                inventorySchema.updateOne({ userId, name }, { $inc: { quantity: amount } }, { upsert: true }).then(() => {
+                    // console.log('Item saved successfully');
+                }).catch((error) => {
+                    // console.log('Error saving item:', error);
+                });
             }
-            else if (!foundItem) {
+            else {
                 const item = new inventorySchema({ userId, name, quantity: amount });
                 inventory.push(item);
-                inventorySchema.updateOne({ userId, name }, { '$set': { quantity: amount } }, { upsert: true });
+                inventorySchema.updateOne({ userId, name }, { quantity: amount }, { upsert: true }).then(() => {
+                //   console.log('Item saved successfully');
+                }).catch((error) => {
+                //   console.log('Error saving item:', error);
+                });
                 return item;
-            }
-        }
+              }
+          }
     }
 
     async findOrCreatePoint(userId) {
