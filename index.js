@@ -21,6 +21,7 @@ client.aliases = new Collection();
 client.slashCommands = new Collection();
 client.buttons = new Collection();
 client.db = new Db();
+client.utils = require('./utils/utils');
 client.prefix = config.prefix;
 
 module.exports = client;
