@@ -78,7 +78,7 @@ const animals = {
 module.exports = {
 	name: 'hunt',
 	description: 'hunt hunt hunt',
-	cooldown: 1000, // change to 15s
+	cooldown: 30000,
 	userPerms: [],
 	botPerms: [],
     keys: ['pls no eating me', 'holy shit a dragon', 'woah those are some toothers', 'oh frick a dragon',

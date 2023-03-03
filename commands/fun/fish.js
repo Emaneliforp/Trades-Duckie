@@ -74,7 +74,7 @@ const fishes = {
 module.exports = {
 	name: 'fish',
 	description: 'fish fish fish',
-	cooldown: 1000, // change to 15s
+	cooldown: 20000, // change to 15s
 	userPerms: [],
 	botPerms: [],
     keys: ['fish fish fish fishy', 'get the camera ready', 'hook line stinker', 'glub glub glub',
