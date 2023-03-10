@@ -8,6 +8,7 @@ module.exports = {
     cooldown: 0,
     userPerms: [],
     botPerms: [],
+    aliases: ['rolls', 'roll', 'gamble'],
     run: async (client, message, args) => {
         const amount = client.utils.isValidAmount(args[0]);
         const success = roll(winrate);
