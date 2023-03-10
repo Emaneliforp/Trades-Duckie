@@ -6,6 +6,7 @@ module.exports = {
     cooldown: 0,
     userPerms: [],
     botPerms: [],
+    aliases: ['slots'],
     run: async (client, message, args) => {
         const amount = client.utils.isValidAmount(args[0]);
         const balance = await client.db.findOrCreateBalance(message.author.id);
