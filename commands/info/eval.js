@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const config = require('../../config.json');
+const fs = require('fs');
 
 module.exports = {
 	name: 'ev',
@@ -37,7 +38,12 @@ module.exports = {
 
           evaled = evaled.replace(new RegExp(client.token, 'gi'), '[TOKEN REDACTED]');
           evaled = evaled.replace(new RegExp(config.MONGO_UR.replace(/\+/g, '\\+').replace(/\//g, '\\/'), 'gi'), '[MONGO URI REDACTED]');
-        //   evaled = evaled.replace(config.MONGO_UR, '[MONGO URI REDACTED]');
+
+          if (evaled.length > 2000) {
+            fs.writeFileSync('text.js', clean(evaled));
+            const attachment = new AttachmentBuilder('./text.js');
+            return message.channel.send({ files: [attachment] });
+          }
 
           const end = process.hrtime.bigint();
           const elapsed = (end - start) / BigInt(1000000);
@@ -56,6 +62,12 @@ module.exports = {
         catch (err) {
           const end = process.hrtime.bigint();
           const elapsed = (end - start) / BigInt(1000000);
+
+          if (err.length > 2000) {
+            fs.writeFileSync('text.js', clean(err));
+            const attachment = new AttachmentBuilder('./text.js');
+            return message.channel.send({ files: [attachment] });
+          }
 
           const embed = new EmbedBuilder()
             .setColor('#0099ff')

@@ -1,3 +1,5 @@
+const cron = require('node-cron');
+const { Collection } = require('discord.js');
 module.exports = class Utils {
     static error(client, type, info, err) {
         client.DB.ref('error/' + type).push({ info: info, error: err })
@@ -46,5 +48,11 @@ module.exports = class Utils {
       }
     }
 
+    static clearDailies(client) {
+      // write a cron task to clear dailies which is a collection every day at 00:00
+      cron.schedule('0 0 * * *', () => {
+        client.dailies = new Collection();
+      });
+    }
 
 };
