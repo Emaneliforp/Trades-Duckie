@@ -16,6 +16,11 @@ client.on('messageCreate', async message => {
 		client.commands.get('fish').boss(message);
 	}
 
+	if (!client.dailies.has(message.author.id)) {
+		client.dailies.set(message.author.id, 0);
+		client.commands.get('daily').checkDaily(message);
+	}
+
 	if (!message.content.startsWith(prefix)) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/g);

@@ -23,6 +23,9 @@ client.buttons = new Collection();
 client.db = new Db();
 client.utils = require('./utils/utils');
 client.prefix = config.prefix;
+client.dailies = new Collection();
+
+client.utils.clearDailies(client);
 
 module.exports = client;
 require('./database.js');
