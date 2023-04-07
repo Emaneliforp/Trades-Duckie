@@ -6,7 +6,9 @@ const balanceSchema = require('../schemas/balanceSchema');
 const dailySchema = require('../schemas/dailySchema');
 const inventorySchema = require('../schemas/inventorySchema');
 const pointSchema = require('../schemas/pointSchema');
-
+const questConfigSchema = require('../schemas/questConfigSchema');
+const userQuestSchema = require('../schemas/userQuestSchema');
+const commandSchema = require('../schemas/commandSchema');
 class Database {
     constructor() {
         this.badge = new Collection();
@@ -14,6 +16,8 @@ class Database {
         this.daily = new Collection();
         this.inventory = new Collection();
         this.point = new Collection();
+        this.questConfig = null;
+        this.usage = new Collection();
     }
 
     async findOrCreateBadge(userId, name = null) {
@@ -139,6 +143,92 @@ class Database {
 
         return point;
 
+    }
+
+    async findOrCreateQuestConfig() {
+        if (this.questConfig) return this.questConfig;
+        let questConfig = await questConfigSchema.findOne({});
+        if (!questConfig) {
+            questConfig = new questConfigSchema({});
+            await questConfig.save();
+        }
+        this.questConfig = questConfig;
+        return questConfig;
+    }
+
+    async getUserQuest(userId) {
+        if (!userId) throw new Error('Missing userId');
+
+        const userQuest = await userQuestSchema.find({ userId });
+
+        return userQuest.map(a => a.quest);
+    }
+
+    async addUserQuest(userId, quest) {
+        if (!userId) throw new Error('Missing userId');
+
+        const filter = { userId, quest };
+        const update = filter;
+        const options = { upsert: true, new: true };
+
+        const savedQuest = await userQuestSchema.findOneAndUpdate(filter, update, options);
+
+        if (savedQuest) return true;
+        else return false;
+    }
+
+    async addUsage(userId, name) {
+        const filter = { name, userId };
+        const update = { $inc: { usage: 1 } };
+        const options = { upsert: true, new: true };
+
+        const savedCommand = await commandSchema.findOneAndUpdate(filter, update, options);
+
+        // Update the cache
+        if (this.usage.has(userId)) {
+          const usageObject = this.usage.get(userId);
+          // eslint-disable-next-line no-prototype-builtins
+          if (usageObject.hasOwnProperty(name)) {
+            usageObject[name] = savedCommand.usage; // Update with the updated value
+          }
+          else {
+            usageObject[name] = savedCommand.usage;
+          }
+        }
+        else {
+          const usageObject = {};
+          usageObject[name] = savedCommand.usage;
+          this.usage.set(userId, usageObject);
+        }
+
+        if (savedCommand) return true;
+        else return false;
+    }
+
+    async getUsage(userId, fetch = false) {
+        // Check if usage is already in the cache
+        if (this.usage.has(userId) && !fetch) {
+          return this.usage.get(userId);
+        }
+
+        // If not in cache, fetch from database
+        const pipeline = [
+          { $match: { userId } },
+          { $group: { _id: '$name', totalUsage: { $sum: '$usage' } } },
+          { $project: { _id: 0, name: '$_id', totalUsage: 1 } },
+        ];
+
+        const result = await commandSchema.aggregate(pipeline);
+
+        const usageObject = {};
+        result.forEach(({ name, totalUsage }) => {
+          usageObject[name] = totalUsage;
+        });
+
+        // Add to cache
+        this.usage.set(userId, usageObject);
+
+        return usageObject;
     }
 
     deletePoint(userId) {
